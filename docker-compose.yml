@@ -1,0 +1,23 @@
+version: "3.2"
+#  To build `app` do the following:
+#   -  docker-compose build --build-arg SSH_PRIVATE_KEY="$(cat ~/.ssh/<github_private_key>)" app
+#
+services:
+  app:
+    build:
+      context: .
+      args:
+        SSH_PRIVATE_KEY: "XX"
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: 'settings.dev_docker'
+    ports:
+      - 8000:8000
+    networks:
+      - main
+    working_dir: /data/app/axis
+    command: bash
+
+networks:
+  main:
