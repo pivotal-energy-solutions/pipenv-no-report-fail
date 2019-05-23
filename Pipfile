@@ -13,6 +13,6 @@ freeze = "pip freeze"
 coverage = "*"
 
 [packages]
-django-bootstrap-templatetags = {git = "https://github.com/pivotal-energy-solutions/django-bootstrap-templatetags",ref = "2f60b61434b6f2d38968f44422045f8da0ec9a1d"}
+#django-bootstrap-templatetags = {git = "https://github.com/pivotal-energy-solutions/django-bootstrap-templatetags",ref = "2f60b61434b6f2d38968f44422045f8da0ec9a1d"}
 Django = "==1.11.18"
 Django-Select2 = "==6.3.1"
