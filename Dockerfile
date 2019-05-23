@@ -64,7 +64,8 @@ COPY --chown=app:app Pipfile* /data/app/${LABEL}/
 
 RUN cd /data/app/${LABEL} && \
     rm -rf /data/app/${LABEL}/.venv && \
-    pipenv sync --dev --sequential --verbose && \
+    pipenv install --dev --sequential --verbose && \
+#    pipenv sync --dev --sequential --verbose && \
     sudo yum -y remove mariadb-devel openssl-devel libxslt-devel \
         libxml2-devel libtiff-devel libjpeg-turbo-devel \
         freetype-devel tcl-devel tk-devel gcc  && \
@@ -76,4 +77,6 @@ WORKDIR /data/app/${LABEL}
 RUN rm -rf /data/app/.ssh && \
     pipenv run freeze
 
-ENTRYPOINT ["/data/app/axis/axis/aws/docker/app/docker-entrypoint.sh"]
+RUN python -c "import django_select2; print(dir(django_select2))"
+
+ENTRYPOINT ["/bin/bash"]
