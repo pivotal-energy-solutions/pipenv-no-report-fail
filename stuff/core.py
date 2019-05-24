@@ -1283,9 +1283,9 @@ def pip_install(
     from .utils import Mapping
     from .vendor.urllib3.util import parse_url
 
-    verbose = environments.is_verbose()
+    select2_bug = False
     if "elect" in "%r" % requirement.name:
-        verbose = True
+        select2_bug = True
 
     src = []
     write_to_tmpfile = False
@@ -1297,7 +1297,7 @@ def pip_install(
     if not trusted_hosts:
         trusted_hosts = []
     trusted_hosts.extend(os.environ.get("PIP_TRUSTED_HOSTS", []))
-    if verbose or environments.is_verbose():
+    if select2_bug or environments.is_verbose():
         piplogger.setLevel(logging.INFO)
         if requirement:
             click.echo(
@@ -1313,7 +1313,14 @@ def pip_install(
             prefix="pipenv-", suffix="-requirement.txt", dir=requirements_dir,
             delete=False
         )
-        f.write(vistir.misc.to_bytes(requirement.as_line()))
+        _req = requirement.as_line()
+
+        # TO FIX THE FAILURE UNCOMMENT ME!!
+
+        # if select2_bug:
+        #     _req = _req.split()[0]
+
+        f.write(vistir.misc.to_bytes(_req))
         r = f.name
         f.close()
     # Install dependencies when a package is a VCS dependency.
@@ -1378,11 +1385,9 @@ def pip_install(
     elif r:
         install_reqs = ["-r", r]
         with open(r) as f:
-            # if "--hash" not in f.read():
-            #     ignore_hashes = True
             x = f.read()
-            if "elect" in "%r" % requirement.name:
-                print(x)
+            if select2_bug:
+                print("REQUIREMENTS: %s" % x)
             if "--hash" not in x:
                 ignore_hashes = True
     else:
@@ -1397,7 +1402,7 @@ def pip_install(
         pip_command.append("--pre")
     if src:
         pip_command.extend(src)
-    if verbose or environments.is_verbose():
+    if select2_bug or environments.is_verbose():
         pip_command.append("--verbose")
     pip_command.append("--upgrade")
     if selective_upgrade:
@@ -1409,7 +1414,7 @@ def pip_install(
     if not ignore_hashes:
         pip_command.append("--require-hashes")
 
-    if verbose or environments.is_verbose():
+    if select2_bug or environments.is_verbose():
         click.echo(">   $ {0}".format(pip_command), err=True)
 
     cache_dir = vistir.compat.Path(PIPENV_CACHE_DIR)
@@ -1427,10 +1432,13 @@ def pip_install(
             {"PIP_SRC": vistir.misc.fs_str(project.virtualenv_src_location)}
         )
     cmd = Script.parse(pip_command)
-    if verbose:
-        print("HERE??????  %s" % pip_config)
     pip_command = cmd.cmdify()
     c = delegator.run(pip_command, block=block, env=pip_config)
+    if c.ok is False or select2_bug:
+        print("%s RESULTS: %s" % (requirement.name, c.ok))
+        print("%s STATUS: %s" % (requirement.name, c.return_code))
+        print("%s OUT: %s" % (requirement.name, c.out))
+        print("%s ERR: %s" % (requirement.name, c.err))
     return c
 
 

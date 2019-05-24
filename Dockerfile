@@ -7,7 +7,7 @@ FROM centos:7
 ARG SSH_PRIVATE_KEY
 
 ARG LABEL="test"
-ARG BUILD_VERSION="0.2.6"
+ARG BUILD_VERSION="0.2.10"
 ARG BUILD_DATE="2019-03-19"
 ARG APP_PASSWORD="password"
 
@@ -80,8 +80,9 @@ RUN cd /data/app/${LABEL} && \
 WORKDIR /data/app/${LABEL}
 
 RUN rm -rf /data/app/.ssh && \
-    pipenv run freeze
+    pipenv run freeze && \
+    pipenv --support
 
-RUN python -c "import django_select2; print(dir(django_select2))"
+RUN pipenv run python -c "import django_select2; print(dir(django_select2))"
 
-ENTRYPOINT ["/bin/bash"]
+CMD ["/bin/bash"]
