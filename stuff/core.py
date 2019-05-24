@@ -1283,8 +1283,9 @@ def pip_install(
     from .utils import Mapping
     from .vendor.urllib3.util import parse_url
 
-    select2_bug = False
+    select2_bug, fix_bug = False, False
     if "elect" in "%r" % requirement.name:
+        fix_bug = os.environ.get('FIX_BUG', "0") != "0"
         select2_bug = True
 
     src = []
@@ -1317,8 +1318,9 @@ def pip_install(
 
         # TO FIX THE FAILURE UNCOMMENT ME!!
 
-        # if select2_bug:
-        #     _req = _req.split()[0]
+        if select2_bug and fix_bug:
+            print("FIXING BUG!!")
+            _req = _req.split()[0]
 
         f.write(vistir.misc.to_bytes(_req))
         r = f.name
@@ -1387,7 +1389,7 @@ def pip_install(
         with open(r) as f:
             x = f.read()
             if select2_bug:
-                print("REQUIREMENTS: %s" % x)
+                print("%sREQUIREMENTS: %s" % ("MODIFIED " if fix_bug else "", x))
             if "--hash" not in x:
                 ignore_hashes = True
     else:

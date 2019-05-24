@@ -4,16 +4,16 @@
 
 FROM centos:7
 
-ARG SSH_PRIVATE_KEY
-
 ARG LABEL="test"
-ARG BUILD_VERSION="0.2.10"
+ARG BUILD_VERSION="0.2.12"
 ARG BUILD_DATE="2019-03-19"
 ARG APP_PASSWORD="password"
+ARG BUG_FIX=0
 
 ENV PIPENV_VENV_IN_PROJECT 1
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
+ENV FIX_BUG ${BUG_FIX}
 
 MAINTAINER Pivotal Energy Solutions (steven@pivotal.energy)
 
@@ -50,15 +50,7 @@ WORKDIR /data/app
 
 USER app
 
-# Authorize SSH Host and prep for gettting private repos
-RUN mkdir -p /data/app/.ssh && \
-    chmod 0700 /data/app/.ssh && \
-    ssh-keyscan github.com > /data/app/.ssh/known_hosts && \
-    echo "${SSH_PRIVATE_KEY}" > /data/app/.ssh/id_rsa && \
-    git config --global user.name "${LABEL} Docker" && \
-    git config --global url."git@github.com:".insteadOf "https://github.com/" && \
-    chmod 600 /data/app/.ssh/id_rsa && \
-    mkdir /data/app/${LABEL}
+RUN mkdir /data/app/${LABEL}
 
 COPY stuff/core.py /usr/lib/python2.7/site-packages/pipenv/core.py
 
