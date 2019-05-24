@@ -7,7 +7,7 @@ FROM centos:7
 ARG SSH_PRIVATE_KEY
 
 ARG LABEL="test"
-ARG BUILD_VERSION="0.2.1"
+ARG BUILD_VERSION="0.2.6"
 ARG BUILD_DATE="2019-03-19"
 ARG APP_PASSWORD="password"
 
@@ -23,12 +23,12 @@ LABEL com.pivotalenergy.${LABEL}.version=${BUILD_VERSION} \
 
 RUN curl -sL https://rpm.nodesource.com/setup_8.x | bash -
 
-RUN yum -y update && \
-    yum -y install epel-release && \
-    yum -y install python-devel python-pip python-setuptools libxslt libxslt-devel libxml2 \
-        libxml2-devel mariadb-libs mariadb-devel openssl-libs openssl-devel libtiff libtiff-devel \
+RUN yum -y -q update && \
+    yum -y -q install epel-release && \
+    yum -y -q install python-devel python-pip python-setuptools libxslt libxslt-devel \
+        libxml2-devel mariadb-libs mariadb-devel openssl-devel libtiff libtiff-devel \
         libjpeg-turbo libjpeg-turbo-devel freetype freetype-devel lcms2 lcms2-devel libwebp \
-        libwebp-devel tcl tcl-devel tk tk-devel java-1.8.0-openjdk pdftk libffi libffi-devel \
+        libwebp-devel tcl tcl-devel tk tk-devel java-1.8.0-openjdk pdftk libffi-devel \
         gcc sudo git nmap-ncat which nodejs && \
     yum clean all && rm -rf /var/cache/yum && \
     mkdir -p /data && \
@@ -60,16 +60,21 @@ RUN mkdir -p /data/app/.ssh && \
     chmod 600 /data/app/.ssh/id_rsa && \
     mkdir /data/app/${LABEL}
 
+COPY stuff/core.py /usr/lib/python2.7/site-packages/pipenv/core.py
+
 COPY --chown=app:app Pipfile* /data/app/${LABEL}/
 
 RUN cd /data/app/${LABEL} && \
+    rm -rf /data/app/.cache && \
     rm -rf /data/app/${LABEL}/.venv && \
-    pipenv install --dev --sequential --verbose && \
+    pipenv install --dev --sequential && \
+#    pipenv install --dev --verbose && \
+#    pipenv install --dev --sequential --verbose && \
 #    pipenv sync --dev --sequential --verbose && \
-    sudo yum -y remove mariadb-devel openssl-devel libxslt-devel \
+    sudo yum -y -q remove mariadb-devel openssl-devel libxslt-devel \
         libxml2-devel libtiff-devel libjpeg-turbo-devel \
         freetype-devel tcl-devel tk-devel gcc  && \
-    sudo yum clean all && \
+    sudo yum -q clean all && \
     sudo rm -rf /var/cache/yum
 
 WORKDIR /data/app/${LABEL}

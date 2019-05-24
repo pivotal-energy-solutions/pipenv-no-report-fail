@@ -3,7 +3,7 @@ version: "3.2"
 #   -  docker-compose build --build-arg SSH_PRIVATE_KEY="$(cat ~/.ssh/<github_private_key>)" app
 #
 services:
-  app:
+  test_app:
     build:
       context: .
       args:
@@ -16,8 +16,10 @@ services:
       - 8000:8000
     networks:
       - main
-    working_dir: /data/app/axis
+    working_dir: /data/app/test
     command: bash
+    volumes:
+      - ./stuff:/data/app/test/stuff:rw
 
 networks:
   main:
