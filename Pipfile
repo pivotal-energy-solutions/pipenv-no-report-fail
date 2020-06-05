@@ -19,7 +19,7 @@ prospector = "*"
 djangorestframework = "==3.8.2"
 django-bootstrap-templatetags = {git = "https://github.com/pivotal-energy-solutions/django-bootstrap-templatetags",ref = "2f60b61434b6f2d38968f44422045f8da0ec9a1d"}
 django-input-collection = {editable = true,git = "https://github.com/pivotal-energy-solutions/django-input-collection",ref = "4a1038f309fb9a9e27da0dbdf8d5f5d2d15df95c"}
-Django = "==1.11.18"
+Django = "==1.11.29"
 Django-Select2 = "==6.3.1"
 Unidecode = "==1.0.23"
 uWSGI = "==2.0.17.1"
